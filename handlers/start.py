@@ -18,6 +18,9 @@ async def start_command_handler(message: types.Message):
             [
                 types.InlineKeyboardButton(text="Наши вакансии", callback_data="Вакансии"),
                 types.InlineKeyboardButton(text="Оставить Отзыв", callback_data="feedback")
+            ],
+            [
+                types.InlineKeyboardButton(text="Блюда",callback_data="dishes")
             ]
         ])
     await message.answer("Здраствуйте! Добро подаловать в Кафе Фаиза",reply_markup=kb)
@@ -39,3 +42,4 @@ async def vacancies_handler(callback: types.CallbackQuery):
 async def start_review(call: types.CallbackQuery, state: FSMContext):
     await state.set_state(RestourantReview.name)
     await call.message.answer("Ваше имя?")
+

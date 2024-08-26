@@ -1,22 +1,45 @@
+import sqlite3
+
 from aiogram import Router, types, F
+from aiogram.filters.command import Command
+
+from keyboards import categories_keyboard
+from bot_config import database
 
 
 dishes_router = Router()
 
 
-@dishes_router.message(F.text=="Холодные Напитки")
-async def drinks_handler(message: types.Message):
-    image=types.FSInputFile("pictures/cocacola.jpg")
-    await message.answer_photo(photo=image,caption="Coca-Cola")
+@dishes_router.message(Command("dishes"))
+async def shop_command_handler(message: types.Message):
+    await message.answer("Выберите категорию блюд", reply_markup=categories_keyboard())
 
 
-@dishes_router.message(F.text=="Завтраки")
-async def breakfast_handler(message: types.Message):
-    image=types.FSInputFile("pictures/breakfast.jpg")
-    await message.answer_photo(photo=image,caption="Яичница с салатом")
+categories = {"Детское блюда", "Первые блюда", "Салаты"}
 
 
-@dishes_router.message(F.text=="Горячие блюда")
-async def Hot_dishes_handler(message: types.Message):
-    image=types.FSInputFile("pictures/dishes.jpg")
-    await message.answer_photo(photo=image,caption="Жаркое")
+@dishes_router.message(F.text.lower())
+async def genres_handler(message: types.Message):
+    category = message.text
+    kb = types.ReplyKeyboardRemove()
+
+    dishes = database.fetch(
+        """
+            SELECT * FROM dishes 
+            JOIN categories ON dishes.category_id = categories.id 
+            WHERE categories.name = ?
+        """,
+        (category.capitalize(),)
+    )
+    if not dishes:
+        await message.answer(f"Блюда по категории {category} нет ")
+        return
+
+    # pprint(books)
+    await message.answer(
+        f"Блюда по категории {category}: ",
+        reply_markup=kb
+    )
+    for dish in dishes:
+        image=types.FSInputFile(dish[3])
+        await message.answer_photo(photo=image, caption=f"Название: {dish[1]}\nЦена: {dish[2]} сом")
