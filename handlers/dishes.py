@@ -42,4 +42,4 @@ async def genres_handler(message: types.Message):
     )
     for dish in dishes:
         image=types.FSInputFile(dish[3])
-        await message.answer_photo(photo=image, caption=f"Название: {dish[1]}\nЦена: {dish[2]} сом")
+        await message.answer_photo(photo='https://cdn.house.kg/house/images/a/3/3/a330328235d6de72bb0e52f8321d42e1_240x180.jpg', caption=f"Название: {dish[1]}\nЦена: {dish[2]} сом")
